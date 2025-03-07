@@ -1,4 +1,22 @@
 // Mock API Data
+
+import reactImage from '../assets/react-image.jpg';
+import fastapiImage from '../assets/fastapi-image.jpg';
+import nodejsImage from '../assets/nodejs-image.jpg';
+import authorImage1 from '../assets/author1.jpg';
+import authorImage2 from '../assets/author2.jpg';
+import authorImage3 from '../assets/author3.jpg';
+import hackathonImage from '../assets/hackathon-image.jpg';
+import datathonImage from '../assets/datathon-image.jpg';
+import lfrImage from '../assets/lfr-image.jpg';
+import aiBlogImage from '../assets/ai-blog.jpg';
+import cloudBlogImage from '../assets/cloud-blog.jpg';
+import securityBlogImage from '../assets/security-blog.jpg';
+import conferenceImage from '../assets/conference-image.jpg';
+import workshopImage from '../assets/workshop-image.jpg';
+import releaseImage from '../assets/release-image.jpg';
+import updateImage from '../assets/update-image.jpg';
+
 const mockData = {
   stats: [
     { number: '50+', label: 'Awards Won' },
@@ -40,6 +58,136 @@ const mockData = {
     { imageUrl: '/api/placeholder/400/320', name: 'Dr. Maria Gonzalez', position: 'Research Director', description: 'Leading expert in artificial intelligence and neural networks' },
     { imageUrl: '/api/placeholder/400/320', name: 'Dr. Thomas Zhang', position: 'Associate Professor', description: 'Award-winning educator and mentor with industry experience' },
     { imageUrl: '/api/placeholder/400/320', name: 'Dr. Kimberly Johnson', position: 'Assistant Professor', description: 'Emerging researcher in sustainable technologies with multiple patents' },
+  ],
+  events: [
+    {
+      id: 1,
+      imageUrl: hackathonImage,
+      organizer: 'Prof. Johnson (Faculty)',
+      title: 'Annual Science Symposium',
+      date: 'March 15, 2025',
+      location: 'Main Hall',
+      description: 'A day-long event showcasing student research projects and featuring guest speakers from leading research institutions.',
+      currentFunds: 3200,
+      fundraisingGoal: 5000,
+      registeredCount: 78,
+      registrationCapacity: 150,
+      interestedCount: 35,
+      category: 'Faculty',
+      tags: ['Science', 'Research', 'Symposium'],
+    },
+    {
+      id: 2,
+      imageUrl: datathonImage,
+      organizer: 'Sarah Chen (Senior)',
+      title: 'Leadership Workshop',
+      date: 'March 22, 2025',
+      location: 'Room 203',
+      description: 'Interactive workshop focusing on developing leadership skills through practical exercises and team building activities.',
+      currentFunds: 800,
+      fundraisingGoal: 1500,
+      registeredCount: 42,
+      registrationCapacity: 50,
+      interestedCount: 28,
+      category: 'Senior Students',
+      tags: ['Leadership', 'Workshop', 'Skills'],
+    },
+    {
+      id: 3,
+      imageUrl: lfrImage,
+      organizer: 'Dr. Martinez (Faculty)',
+      title: 'International Culture Fair',
+      date: 'April 5, 2025',
+      location: 'Campus Quad',
+      description: 'Celebrate diversity with food, performances, and exhibits from cultures around the world. Open to the entire campus community.',
+      currentFunds: 4800,
+      fundraisingGoal: 7000,
+      registeredCount: 125,
+      registrationCapacity: 300,
+      interestedCount: 87,
+      category: 'Faculty',
+      tags: ['Culture', 'Fair', 'International'],
+    },
+    {
+      id: 4,
+      imageUrl: '/api/placeholder/400/320',
+      organizer: 'Robotics Club (Senior-led)',
+      title: 'Robotics Competition',
+      date: 'April 12, 2025',
+      location: 'Engineering Building',
+      description: 'Annual robotics competition where teams compete to design robots that can complete specific challenges.',
+      currentFunds: 2400,
+      fundraisingGoal: 3000,
+      registeredCount: 18,
+      registrationCapacity: 30,
+      interestedCount: 45,
+      category: 'Clubs',
+      tags: ['Robotics', 'Competition', 'Engineering'],
+    },
+    {
+        id: 5,
+        imageUrl: '/api/placeholder/400/320',
+        organizer: 'Drama Club',
+        title: 'Spring Play: A Midsummer Night\'s Dream',
+        date: 'April 28, 2025',
+        location: 'Campus Theater',
+        description: 'Join us for a magical evening with Shakespeare\'s classic comedy.',
+        currentFunds: 1200,
+        fundraisingGoal: 2000,
+        registeredCount: 60,
+        registrationCapacity: 100,
+        interestedCount: 55,
+        category: 'Clubs',
+        tags: ['Drama', 'Theater', 'Shakespeare'],
+    },
+    {
+        id: 6,
+        imageUrl: '/api/placeholder/400/320',
+        organizer: 'Student Government',
+        title: 'Campus Cleanup Day',
+        date: 'May 5, 2025',
+        location: 'Various Locations',
+        description: 'Help us make our campus beautiful! Volunteers needed for cleanup efforts.',
+        currentFunds: 0,
+        fundraisingGoal: 0,
+        registeredCount: 80,
+        registrationCapacity: 150,
+        interestedCount: 70,
+        category: 'Senior Students',
+        tags: ['Cleanup', 'Volunteer', 'Community'],
+    },
+    {
+        id: 7,
+        imageUrl: '/api/placeholder/400/320',
+        organizer: 'Physics Department',
+        title: 'Astrophysics Lecture Series',
+        date: 'May 10, 2025',
+        location: 'Science Lecture Hall',
+        description: 'A series of lectures by renowned astrophysicists. Open to all students and faculty.',
+        currentFunds: 500,
+        fundraisingGoal: 1000,
+        registeredCount: 30,
+        registrationCapacity: 80,
+        interestedCount: 25,
+        category: 'Faculty',
+        tags: ['Physics', 'Astrophysics', 'Lecture'],
+    },
+    {
+        id: 8,
+        imageUrl: '/api/placeholder/400/320',
+        organizer: 'Coding Club',
+        title: 'Hackathon 2025',
+        date: 'May 18, 2025',
+        location: 'Computer Lab',
+        description: 'Join us for a 24-hour coding challenge! Teams compete to develop innovative solutions.',
+        currentFunds: 1800,
+        fundraisingGoal: 3000,
+        registeredCount: 25,
+        registrationCapacity: 40,
+        interestedCount: 35,
+        category: 'Clubs',
+        tags: ['Coding', 'Hackathon', 'Programming'],
+    },
   ],
 };
 

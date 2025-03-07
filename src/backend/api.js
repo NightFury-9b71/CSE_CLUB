@@ -6,7 +6,7 @@ const fetchStats = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockData.stats);
-    }, 500); // Simulate 500ms delay
+    }, 100); // Simulate 500ms delay
   });
 };
 
@@ -14,7 +14,7 @@ const fetchGalleryItems = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockData.galleryItems);
-    }, 750); // Simulate 750ms delay
+    }, 10); // Simulate 750ms delay
   });
 };
 
@@ -22,7 +22,7 @@ const fetchAlumniCards = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockData.alumniCards);
-    }, 600);
+    }, 10);
   });
 };
 
@@ -30,7 +30,7 @@ const fetchResearchCards = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockData.researchCards);
-    }, 800);
+    }, 10);
   });
 };
 
@@ -38,7 +38,7 @@ const fetchTimelineItems = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockData.timelineItems);
-    }, 700);
+    }, 10);
   });
 };
 
@@ -46,8 +46,24 @@ const fetchFacultyCards = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockData.facultyCards);
-    }, 900);
+    }, 10);
   });
 };
 
-export {fetchStats , fetchGalleryItems, fetchAlumniCards, fetchResearchCards, fetchTimelineItems, fetchFacultyCards};
+const fetchEvents = () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockData.events.slice(0,4));
+    }, 10); // Simulate 500ms delay
+  });
+};
+
+export {
+  fetchStats , 
+  fetchGalleryItems, 
+  fetchAlumniCards, 
+  fetchResearchCards, 
+  fetchTimelineItems, 
+  fetchFacultyCards,
+  fetchEvents,
+};

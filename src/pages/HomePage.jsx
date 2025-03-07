@@ -13,7 +13,7 @@ const Header = () => (
 );
 
 const Navigation = () => (
-  <nav className="bg-[#3498db] sticky top-[60px] z-100 py-4">
+  <nav className="bg-[#3498db] sticky top-[60px] z-10 py-4">
     <ul className="flex justify-center flex-wrap list-none">
       <NavItem href="#achievements">Achievements</NavItem>
       <NavItem href="#events">Events</NavItem>
