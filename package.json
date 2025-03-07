@@ -12,6 +12,7 @@
   "dependencies": {
     "@faker-js/faker": "^9.5.1",
     "@tailwindcss/vite": "^4.0.6",
+    "dompurify": "^3.2.4",
     "lucide-react": "^0.476.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

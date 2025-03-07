@@ -189,6 +189,48 @@ const mockData = {
         tags: ['Coding', 'Hackathon', 'Programming'],
     },
   ],
+  posts: [
+    {
+      id: 1,
+      title: 'Ethics in AI: Navigating the Future of Technology',
+      excerpt:
+        'As AI becomes increasingly integrated into our daily lives, ethical considerations are more important than ever. This post explores the challenges and potential solutions...',
+      author: {
+        name: 'Prof. Smith',
+        role: 'Teacher',
+        imageUrl: authorImage1,
+      },
+      imageUrl: aiBlogImage,
+      tags: ['AI', 'Ethics', 'Technology'],
+      likes: 24,
+      comments: 18,
+      date: '5 days ago',
+      content: `
+        <p>AI is changing our world. Here's a deeper look into the ethical considerations we need to address.</p>
+        <p>More paragraphs...</p>
+      `,
+    },
+    {
+      id: 2,
+      title: 'My Journey from CS Student to Senior Developer at Google',
+      excerpt:
+        "Four years ago, I was sitting in the same classrooms you are now. Here's how I navigated the journey from student to professional developer, and lessons I learned along the way...",
+      author: {
+        name: 'Jane Doe',
+        role: 'Alumni',
+        imageUrl: authorImage2,
+      },
+      imageUrl: conferenceImage,
+      tags: ['Career', 'Industry', 'Learning'],
+      likes: 42,
+      comments: 31,
+      date: '1 week ago',
+      content: `
+        <p>My journey to Google was not easy, but it was incredibly rewarding.</p>
+        <p>More paragraphs...</p>
+      `,
+    },
+  ],
 };
 
 export default mockData;

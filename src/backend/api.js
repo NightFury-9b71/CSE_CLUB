@@ -58,6 +58,28 @@ const fetchEvents = () => {
   });
 };
 
+const fetchPosts = (filter = 'All', search = '') => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      let filteredPosts = mockData.posts;
+
+      if (filter !== 'All') {
+        filteredPosts = filteredPosts.filter(
+          (post) => post.author.role === filter
+        );
+      }
+
+      if (search) {
+        filteredPosts = filteredPosts.filter((post) =>
+          post.title.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+
+      resolve(filteredPosts);
+    }, 10); // Simulate network delay
+  });
+};
+
 export {
   fetchStats , 
   fetchGalleryItems, 
@@ -66,4 +88,5 @@ export {
   fetchTimelineItems, 
   fetchFacultyCards,
   fetchEvents,
+  fetchPosts,
 };
