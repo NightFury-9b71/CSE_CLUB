@@ -8,8 +8,6 @@ function App() {
     <Router>
       <RouteList />
     </Router>
-
-    // <HomePage/>
   );
 }
 

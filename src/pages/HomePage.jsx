@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import {fetchStats , fetchGalleryItems, fetchAlumniCards, fetchResearchCards, fetchTimelineItems, fetchFacultyCards} from '../backend/api';
 
 // Reusable Components (Single Responsibility)
-
 const Header = () => (
   <header className="relative overflow-hidden bg-[#2c3e50] text-white text-center py-8">
     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-[rgba(44,62,80,0.9)] to-[rgba(52,152,219,0.8)] z-1"></div>
@@ -127,30 +127,79 @@ const Footer = () => (
 // Main Component (Open/Closed, Liskov Substitution)
 
 const HomePage = () => {
+  const [stats, setStats] = useState([]);
+  const [galleryItems, setGalleryItems] = useState([]);
+  const [alumniCards, setAlumniCards] = useState([]);
+  const [researchCards, setResearchCards] = useState([]);
+  const [timelineItems, setTimelineItems] = useState([]);
+  const [facultyCards, setFacultyCards] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const statsData = await fetchStats();
+        setStats(statsData);
+
+        const galleryData = await fetchGalleryItems();
+        setGalleryItems(galleryData);
+
+        const alumniData = await fetchAlumniCards();
+        setAlumniCards(alumniData);
+
+        const researchData = await fetchResearchCards();
+        setResearchCards(researchData);
+
+        const timelineData = await fetchTimelineItems();
+        setTimelineItems(timelineData);
+
+        const facultyData = await fetchFacultyCards();
+        setFacultyCards(facultyData);
+
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500">Error: {error.message || 'Failed to load data.'}</div>;
+  }
+
   return (
     <div className="bg-[#ecf0f1] text-[#2c3e50]">
       <Header />
       <Navigation />
       <main className="max-w-[1200px] mx-auto p-8">
+        {/* Render your data here using the state variables */}
         <section id="achievements">
           <SectionTitle>By the Numbers</SectionTitle>
           <div className="flex justify-around flex-wrap mb-12">
-            <StatCard number="50+" label="Awards Won" />
-            <StatCard number="120" label="Research Papers" />
-            <StatCard number="1200+" label="Successful Graduates" />
-            <StatCard number="25" label="Years of Excellence" />
+            {stats.map((stat, index) => (
+              <StatCard key={index} number={stat.number} label={stat.label} />
+            ))}
           </div>
         </section>
 
         <section id="events">
           <SectionTitle>Event Gallery</SectionTitle>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <GalleryItem imageUrl="https://set.jainuniversity.ac.in/academics/computer-science-engineering/images/top-university-of-india3.jpg" title="Annual Symposium 2024" description="Our department's flagship event showcasing student research" />
-            <GalleryItem imageUrl="https://www.cst.cam.ac.uk/sites/default/files/openday1500crop.jpg" title="Innovation Hackathon" description="72-hour challenge resulting in revolutionary solutions" />
-            <GalleryItem imageUrl="https://ssl.du.ac.bd/fontView/images/activity/1737866176CSEDUKUET.jpg" title="Excellence Awards Ceremony" description="Celebrating outstanding achievements in academics and research" />
-            <GalleryItem imageUrl="https://www.ritrjpm.ac.in/images/computer-science/2022-2023/workshop-rpa_1.jpg" title="Distinguished Speaker Series" description="World-class experts sharing insights with our students" />
-            <GalleryItem imageUrl="https://www.cse.ruet.ac.bd/public/storage/events/ruet-shines-at-46th-icpc-heartfelt-congratulations-to-ruet-aftermath-1.jpg" title="National Competition Winners" description="Our team bringing home the gold" />
-            <GalleryItem imageUrl="https://bauet.ac.bd/ce/wp-content/uploads/sites/7/2022/03/DSC03895-1024x768.jpg" title="Industry Field Trip" description="Students gaining real-world exposure" />
+            {galleryItems.map((item, index) => (
+              <GalleryItem key={index} imageUrl={item.imageUrl} title={item.title} description={item.description} />
+            ))}
           </div>
           <div className="flex justify-center mb-12">
             <Button>View More Photos</Button>
@@ -160,11 +209,9 @@ const HomePage = () => {
         <section id="alumni">
           <SectionTitle>Distinguished Alumni</SectionTitle>
           <div className="flex overflow-x-auto scroll-snap-x-mandatory gap-6 p-4 mb-12">
-            <AlumniCard imageUrl="https://static.just.edu.bd/images/public/teacher/1672469742691_-1.jpeg" name="Dr. Sarah Johnson" year="Class of 2015" description="Lead Researcher at InnovaTech, pioneering work in artificial intelligence" />
-            <AlumniCard imageUrl="https://static.just.edu.bd/images/public/teacher/1674976532125_-1.jpeg" name="Michael Chen" year="Class of 2010" description="Founder & CEO of FutureSystems, Forbes 30 Under 30" />
-            <AlumniCard imageUrl="https://cdn.daily-sun.com/public/news_images/2018/05/03/daily-sun-2018-05-03-1.jpg" name="Dr. Emily Rodriguez" year="Class of 2008" description="Award-winning professor at Stanford University" />
-            <AlumniCard imageUrl="/api/placeholder/400/320" name="James Wilson" year="Class of 2012" description="CTO at GlobalTech, patent holder for breakthrough technology" />
-            <AlumniCard imageUrl="/api/placeholder/400/320" name="Aisha Patel" year="Class of 2018" description="Founder of EduTech Solutions, revolutionizing education technology" />
+            {alumniCards.map((card, index) => (
+              <AlumniCard key={index} imageUrl={card.imageUrl} name={card.name} year={card.year} description={card.description} />
+            ))}
           </div>
           <div className="flex justify-center mb-12">
             <Button>See All Alumni</Button>
@@ -174,10 +221,9 @@ const HomePage = () => {
         <section id="research">
           <SectionTitle>Notable Research</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <ResearchCard title="Quantum Computing Applications in Modern Healthcare" authors="Dr. Alan Smith, Sarah Johnson, Michael Lee" date="Published: October 2024" description="Groundbreaking research on applying quantum algorithms to medical diagnosis, cited over 150 times." />
-            <ResearchCard title="Sustainable Energy Solutions for Urban Environments" authors="Dr. Lisa Wang, James Wilson" date="Published: July 2023" description="Award-winning research presenting novel approaches to urban renewable energy implementation." />
-            <ResearchCard title="Machine Learning in Predictive Maintenance Systems" authors="Dr. Robert Johnson, Emily Chen" date="Published: March 2024" description="Research that led to industry partnerships and implementation in manufacturing sectors." />
-            <ResearchCard title="Advances in Biodegradable Materials for Consumer Products" authors="Dr. Carlos Rodriguez, Aisha Patel" date="Published: September 2023" description="Patent-pending research creating eco-friendly alternatives to common plastics." />
+            {researchCards.map((card, index) => (
+              <ResearchCard key={index} title={card.title} authors={card.authors} date={card.date} description={card.description} />
+            ))}
           </div>
           <div className="flex justify-center mb-12">
             <Button>Explore Research Database</Button>
@@ -188,22 +234,18 @@ const HomePage = () => {
           <SectionTitle>Past & Future Initiatives</SectionTitle>
           <div className="relative max-w-[800px] mx-auto mb-12">
             <div className="absolute w-[6px] bg-[#3498db] top-0 bottom-0 left-1/2 -ml-1"></div>
-            <TimelineItem date="2020" title="Undergraduate Research Program" description="Launched program enabling undergraduates to participate in cutting-edge research with faculty mentors." isLeft />
-            <TimelineItem date="2021" title="Industry Partnership Initiative" description="Established collaborations with leading companies providing internships and funding." />
-            <TimelineItem date="2022" title="Global Exchange Program" description="Created opportunities for students to study abroad at partner universities." isLeft />
-            <TimelineItem date="2023" title="Innovation Lab" description="Opened state-of-the-art facility for student projects and entrepreneurial ventures." />
-            <TimelineItem date="2024" title="Diversity in STEM Initiative" description="Established scholarships and mentorship programs to increase representation." isLeft />
-            <TimelineItem date="2025 (Planned)" title="Center for Interdisciplinary Studies" description="Upcoming research center focusing on cross-disciplinary collaboration." />
+            {timelineItems.map((item, index) => (
+              <TimelineItem key={index} date={item.date} title={item.title} description={item.description} isLeft={item.isLeft} />
+            ))}
           </div>
         </section>
 
         <section id="faculty">
           <SectionTitle>Distinguished Faculty</SectionTitle>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            <FacultyCard imageUrl="/api/placeholder/400/320" name="Prof. David Anderson" position="Department Chair" description="Pioneering research in quantum physics with over 200 publications" />
-            <FacultyCard imageUrl="/api/placeholder/400/320" name="Dr. Maria Gonzalez" position="Research Director" description="Leading expert in artificial intelligence and neural networks" />
-            <FacultyCard imageUrl="/api/placeholder/400/320" name="Dr. Thomas Zhang" position="Associate Professor" description="Award-winning educator and mentor with industry experience" />
-            <FacultyCard imageUrl="/api/placeholder/400/320" name="Dr. Kimberly Johnson" position="Assistant Professor" description="Emerging researcher in sustainable technologies with multiple patents" />
+            {facultyCards.map((card, index) => (
+              <FacultyCard key={index} imageUrl={card.imageUrl} name={card.name} position={card.position} description={card.description} />
+            ))}
           </div>
           <div className="flex justify-center mb-12">
             <Button>Meet All Faculty</Button>
