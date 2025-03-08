@@ -45,7 +45,7 @@ const Dropdown = ({ title, children }) => {
       </button>
       
       {isOpen && (
-        <div className="bg-[#2c3e50] absolute left-0 mt-2 w-48 rounded-md shadow-lg py-1 z-10">
+        <div className="flex flex-col items-center bg-[#2c3e50] absolute left-0 mt-2 w-48 rounded-md shadow-lg py-1 z-10">
           {children}
         </div>
       )}
@@ -82,13 +82,15 @@ const Navigation = ({ isMobile = false }) => {
     { title: 'Home', to: '/' },
     { title: 'Events', to: '/events' },
     { title: 'Blogs', to: '/blogs' },
-    { title: 'Study Materials', to: '/study-materials' },
+    { title: 'Notices', to: '/notices' },
+    { title: 'Treasury', to: '/treasury' },
   ];
   
   // Secondary links for dropdown
   const secondaryLinks = [
-    { title: 'Contact', to: '/contact' },
-    { title: 'Hall of Fame', to: '/hall-of-fame' },
+    { title: 'Study Materials', to: '/study-materials' },
+    { title: 'Votings', to: '/votings' },
+    { title: 'Contact', to: '/contacts' },
   ];
   
   if (isMobile) {
