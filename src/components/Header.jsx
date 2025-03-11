@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X, ChevronDown, User } from 'lucide-react';
-import { NavLink } from 'react-router-dom'; // Import NavLink from react-router-dom
+import { Link, NavLink } from 'react-router-dom'; // Import NavLink from react-router-dom
 
 // Logo Component
 const Logo = () => {
@@ -55,11 +55,12 @@ const Dropdown = ({ title, children }) => {
 
 // AuthButton Component
 const AuthButton = () => {
+  const auth = '/sign-in'
   return (
-    <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center">
+    <Link key={auth} to={auth} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center">
       <User className="mr-2 h-4 w-4" />
       Login / Join
-    </button>
+    </Link>
   );
 };
 

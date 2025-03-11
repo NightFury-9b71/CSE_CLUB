@@ -1,141 +1,326 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { MapPin, Calendar, Users, Star, CheckCircle } from 'lucide-react';
-import { FilterComponent, LoadingIndicator, ErrorDisplay } from '../components/Components';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Calendar, Users, Star, CheckCircle, Filter, Search, ChevronRight, Heart, Clock, Sliders } from 'lucide-react';
 import { useFilteredData } from '../hooks/useFilteredData';
 import { fetchEvents } from '../backend/api';
 
+// Enhanced event card with improved visuals
 function EventCard({ event }) {
   const [isInterested, setIsInterested] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleInterested = () => {
-    setIsInterested(!isInterested);
-  };
+  const handleInterested = () => setIsInterested(!isInterested);
+  const handleRegister = () => setIsRegistered(!isRegistered);
 
-  const handleRegister = () => {
-    setIsRegistered(!isRegistered);
-  };
+  // Calculate percentage for progress bars
+  const registrationPercentage = Math.min(100, (event.registeredCount / event.registrationCapacity) * 100);
+  const fundingPercentage = event.fundraisingGoal 
+    ? Math.min(100, (event.currentFunds / event.fundraisingGoal) * 100) 
+    : null;
 
   return (
-    <div className="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-2xl hover:border-green-500">
-      <div className="relative h-48 overflow-hidden">
+    <div 
+      className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="relative h-56 overflow-hidden">
         <img
           src={event.imageUrl}
           alt={event.title}
-          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+          className={`w-full h-full object-cover transition-transform duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
-        <span className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium tracking-wider">
-          {event.category}
-        </span>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+        
+        {/* Floating action button */}
+        <button 
+          onClick={handleInterested}
+          className={`absolute top-4 right-4 p-3 rounded-full shadow-lg transition-all duration-200 ${
+            isInterested 
+              ? 'bg-rose-500 text-white transform rotate-12 scale-110' 
+              : 'bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white'
+          }`}
+        >
+          <Heart size={20} className={isInterested ? 'fill-white' : ''} />
+        </button>
+        
+        {/* Category badge */}
+        <div className="absolute top-4 left-4 flex items-center space-x-2">
+          <span className="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-medium tracking-wider shadow-lg">
+            {event.category}
+          </span>
+        </div>
+        
+        {/* Date badge */}
+        <div className="absolute left-4 bottom-4 flex space-x-3 text-white">
+          <div className="flex items-center space-x-1">
+            <Clock size={16} className="text-emerald-300" />
+            <span className="text-sm font-medium">{event.date}</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <MapPin size={16} className="text-emerald-300" />
+            <span className="text-sm font-medium">{event.location}</span>
+          </div>
+        </div>
       </div>
+      
       <div className="p-6 space-y-4">
-        <div className="space-y-2">
-          <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">
-            {event.title}
-          </h3>
-          <p className="text-gray-600 line-clamp-3">{event.description}</p>
+        <h3 className="text-xl font-bold text-gray-800 group-hover:text-emerald-600 transition-colors line-clamp-2">
+          {event.title}
+        </h3>
+        
+        <p className="text-gray-600 text-sm line-clamp-2">{event.description}</p>
+        
+        {/* Progress bars with modern styling */}
+        <div className="space-y-3 pt-2">
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs">
+              <span className="font-medium text-gray-700">Registration</span>
+              <span className="text-gray-500">{event.registeredCount}/{event.registrationCapacity}</span>
+            </div>
+            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className={`h-full rounded-full ${
+                  registrationPercentage > 80 ? 'bg-amber-500' : 'bg-emerald-500'
+                }`} 
+                style={{ width: `${registrationPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          {event.fundraisingGoal && (
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs">
+                <span className="font-medium text-gray-700">Fundraising</span>
+                <span className="text-gray-500">${event.currentFunds}/${event.fundraisingGoal}</span>
+              </div>
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full rounded-full bg-violet-500" 
+                  style={{ width: `${fundingPercentage}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="space-y-2">
-          <div className="flex items-center text-gray-500 space-x-2">
-            <Calendar size={16} />
-            <span>{event.date}</span>
+        
+        {/* Participant counts */}
+        <div className="flex justify-between text-xs text-gray-500 pt-2">
+          <div className="flex items-center space-x-1">
+            <Users size={14} className="text-gray-400" />
+            <span>{event.registeredCount} attending</span>
           </div>
-          <div className="flex items-center text-gray-500 space-x-2">
-            <MapPin size={16} />
-            <span>{event.location}</span>
-          </div>
-        </div>
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <div className="flex items-center space-x-2">
-            <Users size={16} />
-            <span>{event.registeredCount} Registered</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Star size={16} />
-            <span>{event.interestedCount} Interested</span>
+          <div className="flex items-center space-x-1">
+            <Star size={14} className="text-gray-400" />
+            <span>{event.interestedCount} interested</span>
           </div>
         </div>
-        {event.fundraisingGoal && (
-          <div className="space-y-2">
-            <ProgressBar
-              label="Fundraising Goal"
-              value={event.currentFunds}
-              total={event.fundraisingGoal}
-              type="fundraising"
-            />
-          </div>
-        )}
-        <div className="space-y-2">
-            <ProgressBar
-              label="Registrations"
-              value={event.registeredCount}
-              total={event.registrationCapacity}
-              type="registration"
-            />
-        </div>
-
-        <div className="flex space-x-4 pt-4 border-t border-gray-200">
+        
+        {/* Action buttons */}
+        <div className="pt-4 grid grid-cols-2 gap-3">
           <button
             onClick={handleInterested}
-            className={`flex-1 flex items-center justify-center space-x-2 py-2 rounded-lg transition-colors ${
+            className={`py-2.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1.5 ${
               isInterested
-                ? 'bg-green-600 text-white'
-                : 'border border-green-600 text-green-600 hover:bg-green-50'
+                ? 'bg-rose-100 text-rose-600 border border-rose-200'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            <Star size={16} />
-            <span>{isInterested ? 'Interested' : 'Mark Interested'}</span>
+            <Heart size={16} className={isInterested ? 'fill-rose-500' : ''} />
+            <span>{isInterested ? 'Interested' : 'Interest'}</span>
           </button>
           <button
             onClick={handleRegister}
-            className={`flex-1 flex items-center justify-center space-x-2 py-2 rounded-lg transition-colors ${
+            className={`py-2.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1.5 ${
               isRegistered
-                ? 'bg-green-600 text-white'
-                : 'border border-green-600 text-green-600 hover:bg-green-50'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
             }`}
           >
-            <CheckCircle size={16} />
-            <span>{isRegistered ? 'Registered' : 'Register Now'}</span>
+            {isRegistered ? <CheckCircle size={16} /> : <ChevronRight size={16} />}
+            <span>{isRegistered ? 'Registered' : 'Register'}</span>
           </button>
         </div>
-        <div className="flex flex-wrap gap-2 pt-4">
-          {event.tags.map((tag) => (
+        
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 pt-1">
+          {event.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs"
+              className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs"
             >
               {tag}
             </span>
           ))}
+          {event.tags.length > 3 && (
+            <span className="text-xs text-gray-500">+{event.tags.length - 3} more</span>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
+// Enhanced filter component with search
+function EnhancedFilterComponent({ categories, activeFilter, onFilterChange, onSearch }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    onSearch(e.target.value);
+  };
+
+  return (
+    <div className="sticky top-0 z-10 bg-white shadow-md border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        {/* Upper row with search and filter toggle */}
+        <div className="flex items-center justify-between gap-4 mb-3">
+          <div className="relative flex-grow max-w-xl">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search size={18} className="text-indigo-500" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search events..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="pl-11 pr-4 py-3 w-full bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-all"
+            />
+          </div>
+          
+          <button 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 px-4 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium rounded-lg transition-colors"
+          >
+            <Sliders size={18} />
+            <span className="hidden sm:inline">Filters</span>
+          </button>
+        </div>
+        
+        {/* Categories row */}
+        <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 md:max-h-96 md:opacity-100'}`}>
+          <div className="py-2 flex flex-wrap gap-2">
+            <button
+              onClick={() => onFilterChange('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                activeFilter === 'all' 
+                  ? 'bg-indigo-600 text-white shadow-sm' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              All Events
+            </button>
+            
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => onFilterChange(category)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                  activeFilter === category 
+                    ? 'bg-indigo-600 text-white shadow-sm' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+            
+            {/* Advanced filters - for visual completion */}
+            <div className="hidden md:flex ml-auto items-center gap-3">
+              <div className="text-sm text-gray-500">More filters:</div>
+              <select className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-2">
+                <option>Date: Upcoming</option>
+                <option>Date: This Week</option>
+                <option>Date: This Month</option>
+              </select>
+              <select className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-2">
+                <option>Location: Any</option>
+                <option>Location: Online</option>
+                <option>Location: In-Person</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        {/* Active filters display */}
+        {activeFilter !== 'all' && (
+          <div className="flex gap-2 items-center mt-3 pt-3 border-t border-gray-100">
+            <span className="text-sm text-gray-500">Active filters:</span>
+            <div className="flex items-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md text-sm">
+              {activeFilter}
+              <button 
+                onClick={() => onFilterChange('all')}
+                className="ml-1 text-indigo-500 hover:text-indigo-700"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Loading indicator with animation
+function LoadingIndicator() {
+  return (
+    <div className="flex flex-col items-center justify-center py-20">
+      <div className="relative w-16 h-16">
+        <div className="absolute top-0 left-0 w-full h-full border-4 border-emerald-200 rounded-full animate-pulse"></div>
+        <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-emerald-500 rounded-full animate-spin"></div>
+      </div>
+      <p className="mt-4 text-gray-500 font-medium">Loading amazing events...</p>
+    </div>
+  );
+}
+
+// Error display with retry option
+function ErrorDisplay({ message, onRetry }) {
+  return (
+    <div className="text-center py-16 max-w-md mx-auto">
+      <div className="bg-red-50 p-6 rounded-2xl">
+        <h3 className="text-lg font-semibold text-red-700 mb-2">Oops! Something went wrong</h3>
+        <p className="text-gray-600 mb-4">{message}</p>
+        <button 
+          onClick={onRetry} 
+          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Event grid with improved layout
 const EventGrid = ({ events }) => (
-  <div className="px-8 py-8 event-grid grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3  xxl:grid-cols-4 gap-5 mb-8">
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-6">
     {events.map((event) => (
       <EventCard key={event.id} event={event} />
     ))}
   </div>
 );
 
-const ProgressBar = ({ label, value, total, type }) => (
-  <div className="event-progress mb-3">
-    <div className="progress-label flex justify-between text-xs mb-1">
-      <span>{label}</span>
-      <span>{value}/{total}</span>
+// Empty state when no events match filters
+const EmptyState = ({ activeFilter }) => (
+  <div className="flex flex-col items-center justify-center py-16 text-center">
+    <div className="bg-gray-100 p-6 rounded-full mb-4">
+      <Calendar size={40} className="text-gray-400" />
     </div>
-    <div className="progress-bar h-2 bg-gray-200 rounded-full overflow-hidden">
-      <div className={`progress-fill h-full rounded-full ${type === 'fundraising' ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${(value / total) * 100}%` }}></div>
-    </div>
+    <h3 className="text-xl font-bold text-gray-700 mb-2">No events found</h3>
+    <p className="text-gray-500 max-w-md">
+      {activeFilter !== 'all' 
+        ? `There are no events in the "${activeFilter}" category right now.` 
+        : "We couldn't find any events matching your search criteria."}
+    </p>
   </div>
 );
 
-// Main Component (Open/Closed, Liskov)
+// Main Event Page Component
 function EventPage() {
+  const [searchTerm, setSearchTerm] = useState('');
   
   const {
     displayedItems,
@@ -144,139 +329,72 @@ function EventPage() {
     error,
     activeFilter,
     setActiveFilter,
-    resetFilter
+    resetFilter,
+    refresh
   } = useFilteredData(fetchEvents, { 
     defaultCategory: 'all', 
     categoryKey: 'category' 
   });
+  
+  // Filter events by search term
+  const filteredEvents = displayedItems.filter(event => 
+    event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
-    if (loading) return <LoadingIndicator />;
-    if (error) return <ErrorDisplay message={error} />;
+  if (loading) return <LoadingIndicator />;
+  if (error) return <ErrorDisplay message={error} onRetry={refresh} />;
 
   return (
-    <div>
-      <FilterComponent
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto">
+        {/* Hero section */}
+        {/* <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-b-3xl px-6 py-12 md:py-16 mb-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Discover Amazing Events</h1>
+            <p className="text-emerald-100 text-lg max-w-2xl mx-auto">
+              Find and join community events that match your interests and make a difference.
+            </p>
+          </div>
+        </div> */}
+      
+        {/* Filter and search */}
+        <EnhancedFilterComponent 
           categories={categories}
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
-          className="my-6"
-          activeButtonClassName="font-medium"
-     />
-      <EventGrid events={displayedItems} />
+          onSearch={setSearchTerm}
+        />
+      
+        {/* Main content */}
+        <div className="p-6">
+          {filteredEvents.length > 0 ? (
+            <>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-gray-800">
+                  {activeFilter === 'all' ? 'All Events' : `${activeFilter} Events`}
+                  <span className="ml-2 text-sm font-normal text-gray-500">
+                    ({filteredEvents.length} {filteredEvents.length === 1 ? 'event' : 'events'})
+                  </span>
+                </h2>
+                <div className="flex gap-2">
+                  <select className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-600">
+                    <option>Sort by: Date</option>
+                    <option>Sort by: Popularity</option>
+                    <option>Sort by: Registrations</option>
+                  </select>
+                </div>
+              </div>
+              <EventGrid events={filteredEvents} />
+            </>
+          ) : (
+            <EmptyState activeFilter={activeFilter} />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
 export default EventPage;
-
-
-// const EventPage = () => {
-//   const [filteringEnabled, setFilteringEnabled] = useState(true);
-  
-//   // Get data independently of filtering
-//   const { 
-//     data: galleryItems, 
-//     loading, 
-//     error 
-//   } = useDataProvider(fetchEvents, []);
-  
-//   // Set up filtering independently of data fetching
-//   const {
-//     activeFilter,
-//     setActiveFilter,
-//     filterItems,
-//     extractCategories,
-//     resetFilter
-//   } = useFilter({ 
-//     defaultCategory: 'all', 
-//     categoryKey: 'category' 
-//   });
-  
-//   // Get categories from the data when available
-//   const categories = extractCategories(galleryItems);
-  
-//   // Display either filtered or all items based on filtering toggle
-//   const displayedItems = filteringEnabled 
-//     ? filterItems(galleryItems) 
-//     : galleryItems;
-
-//   return (
-//     <div className="gallery-page max-w-[1500px] mx-auto p-4 my-8">
-//       <h1 className="text-4xl font-bold mb-6 text-center">Event Gallery</h1>
-      
-//       {/* Toggle for enabling/disabling filtering */}
-//       <div className="flex justify-center mb-4">
-//         <label className="flex items-center cursor-pointer">
-//           <input 
-//             type="checkbox" 
-//             checked={filteringEnabled}
-//             onChange={() => {
-//               setFilteringEnabled(!filteringEnabled);
-//               if (!filteringEnabled) {
-//                 // Reset to default filter when re-enabling
-//                 resetFilter();
-//               }
-//             }}
-//             className="sr-only"
-//           />
-//           <div className={`w-12 h-6 rounded-full transition-colors duration-300 ${filteringEnabled ? 'bg-blue-600' : 'bg-gray-300'} mr-2`}>
-//             <div className={`w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ${filteringEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
-//           </div>
-//           <span>Enable Filtering</span>
-//         </label>
-//       </div>
-      
-//       {/* Only show filter if filtering is enabled */}
-//       {filteringEnabled && (
-//         <FilterComponent
-//           categories={categories}
-//           activeFilter={activeFilter}
-//           onFilterChange={setActiveFilter}
-//           className="my-6"
-//           activeButtonClassName="font-medium"
-//         />
-//       )}
-      
-//       {/* Display items section */}
-//       {loading ? (
-//         <div className="text-center py-12">
-//           <div className="animate-spin mx-auto h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
-//           <p className="mt-4">Loading gallery items...</p>
-//         </div>
-//       ) : error ? (
-//         <div className="text-center py-12 text-red-500">
-//           <p>Error: {error}</p>
-//           <button 
-//             onClick={() => refresh()} 
-//             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-//           >
-//             Try Again
-//           </button>
-//         </div>
-//       ) : displayedItems.length === 0 ? (
-//         <div className="text-center py-12 text-gray-500">
-//           <p>No items found {filteringEnabled ? 'for this category' : ''}.</p>
-//         </div>
-//       ) : (
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-//           {displayedItems.map((item, index) => (
-//             <div key={index} className="gallery-item bg-white rounded-lg shadow-lg overflow-hidden">
-//               <img 
-//                 src={item.imageUrl} 
-//                 alt={item.title} 
-//                 className="w-full h-48 object-cover" 
-//               />
-//               <div className="p-4">
-//                 <h3 className="font-bold text-lg">{item.title}</h3>
-//                 <p className="text-gray-600 text-sm mt-1">{item.description}</p>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-
-

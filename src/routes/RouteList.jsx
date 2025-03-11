@@ -12,6 +12,7 @@ import ContactPage from '../pages/ContactPage';
 import GalleryPage from '../pages/GalleryPage';
 import AlumniDetailsPage from '../pages/AlumniDetailsPage';
 import AlumniProfilePage from '../pages/AlumniProfilePage';
+import CSClubAuth from '../pages/AuthenticationPage';
 
 const RouteList = () => {
   return (
@@ -29,6 +30,7 @@ const RouteList = () => {
         <Route path="gallery" element={<GalleryPage />} />
         <Route path="alumni" element={<AlumniDetailsPage />} />
         <Route path="profile" element={<AlumniProfilePage />} />
+        <Route path="sign-in" element={<CSClubAuth />} />
       </Route>
     </Routes>
   );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {fetchStats , fetchGalleryItems, fetchAlumniCards, fetchResearchCards, fetchTimelineItems, fetchFacultyCards} from '../backend/api';
 import { Link } from 'react-router-dom';
+import { LoadingIndicator, ErrorDisplay } from '../components/Components';
 
 // Reusable Components (Single Responsibility)
 const Header = () => (
@@ -158,12 +159,12 @@ const HomePage = () => {
   const [researchCards, setResearchCards] = useState([]);
   const [timelineItems, setTimelineItems] = useState([]);
   const [facultyCards, setFacultyCards] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      setLoading(true);
       setError(null);
       
       try {
@@ -189,20 +190,15 @@ const HomePage = () => {
         console.error('Error fetching data:', err);
         setError(err);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
     
     fetchData();
   }, []);
   
-  if (isLoading) {
-    return <div className="text-center py-8">Loading...</div>;
-  }
-  
-  if (error) {
-    return <div className="text-center py-8 text-red-500">Error: {error.message || 'Failed to load data.'}</div>;
-  }
+  if (loading) return <LoadingIndicator />;
+  if (error) return <ErrorDisplay message={error} />;
   
   return (
     <div className="bg-[#ecf0f1] text-[#2c3e50]">
