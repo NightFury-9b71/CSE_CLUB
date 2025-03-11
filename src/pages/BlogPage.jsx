@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { fetchPosts } from '../backend/api'; // Ensure this import points to your API file
 import { FaHeart, FaComment, FaSearch } from 'react-icons/fa';
+import FilterComponent from '../components/Components';
+import { useFilteredData } from '../hooks/useFilteredData';
 
 // Header Component
 const Header = () => (
@@ -16,40 +18,6 @@ const Header = () => (
       Start Contributing
     </a>
   </section>
-);
-
-// Filter Component
-const Filter = ({ filter, handleFilterChange }) => (
-  <div className="flex flex-wrap gap-4 mb-4 md:mb-0">
-    <span className="font-semibold">Filter by:</span>
-    {['All', 'Teacher', 'Alumni', 'Senior'].map((f) => (
-      <button
-        key={f}
-        onClick={() => handleFilterChange(f)}
-        className={`py-2 px-4 rounded-md ${
-          filter === f
-            ? 'bg-blue-600 text-white'
-            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-        }`}
-      >
-        {f}
-      </button>
-    ))}
-  </div>
-);
-
-// Search Component
-const Search = ({ search, handleSearchChange }) => (
-  <div className="flex items-center bg-white rounded-md p-2 shadow-sm">
-    <FaSearch className="text-gray-400 mr-2" />
-    <input
-      type="text"
-      placeholder="Search posts..."
-      className="border-none outline-none"
-      value={search}
-      onChange={(e) => handleSearchChange(e.target.value)}
-    />
-  </div>
 );
 
 // Post Component
@@ -98,7 +66,7 @@ const Post = ({ post, openPost }) => (
 );
 
 // PostList Component
-const PostList = ({ posts, openPost }) => (
+const PostList = ({ posts, openPost='' }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     {posts.map((post) => (
       <Post key={post.id} post={post} openPost={openPost} />
@@ -107,44 +75,90 @@ const PostList = ({ posts, openPost }) => (
 );
 
 // BlogPage Component (Container)
+// const BlogPage = () => {
+//   const [posts, setPosts] = useState([]);
+//   const [filter, setFilter] = useState('All');
+//   const [search, setSearch] = useState('');
+//   const [selectedPost, setSelectedPost] = useState(null);
+
+//   useEffect(() => {
+//     fetchPosts(filter, search).then(setPosts);
+//   }, [filter, search]);
+
+//   const handleFilterChange = (newFilter) => {
+//     setFilter(newFilter);
+//   };
+
+//   const handleSearchChange = (event) => {
+//     setSearch(event.target.value);
+//   };
+
+//   const openPost = (post) => {
+//     setSelectedPost(post);
+//   };
+
+//   const closePost = () => {
+//     setSelectedPost(null);
+//   };
+
+//   return (
+//     <div className="bg-gray-100 min-h-screen">
+//       <Header />
+//       <main className="container mx-auto px-4">
+//         <FilterControls
+//           onFilterChange={handleFilterChange}
+//           onSearchChange={handleSearchChange}
+//           search = {search}
+//         />
+//         <PostList posts={posts} openPost={openPost} />
+//       </main>
+//     </div>
+//   );
+// };
+
+
 const BlogPage = () => {
-  const [posts, setPosts] = useState([]);
-  const [filter, setFilter] = useState('All');
-  const [search, setSearch] = useState('');
-  const [selectedPost, setSelectedPost] = useState(null);
+    
+  const {
+    displayedItems,
+    categories,
+    loading,
+    error,
+    activeFilter,
+    setActiveFilter,
+    resetFilter
+  } = useFilteredData(fetchPosts, { 
+    defaultCategory: 'all', 
+    categoryKey: 'category' 
+  });
 
-  useEffect(() => {
-    fetchPosts(filter, search).then(setPosts);
-  }, [filter, search]);
-
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearch(event.target.value);
-  };
-
-  const openPost = (post) => {
-    setSelectedPost(post);
-  };
-
-  const closePost = () => {
-    setSelectedPost(null);
-  };
-
-  return (
-    <div className="bg-gray-100 min-h-screen">
-      <Header />
-      <main className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 p-4 border-b border-gray-200">
-          <Filter filter={filter} handleFilterChange={handleFilterChange} />
-          <Search search={search} handleSearchChange={handleSearchChange} />
+    if (loading) {
+      return <div className="text-center py-8">Loading...</div>;
+    }
+  
+    if (error) {
+      return (
+        <div className="text-center py-8 text-red-500">
+          Error: {error.message || 'Failed to load data.'}
         </div>
-        <PostList posts={posts} openPost={openPost} />
-      </main>
-    </div>
-  );
-};
+      );
+    }
+
+return (
+  <div className="bg-gray-100 min-h-screen">
+    <Header />
+    <main className="container mx-auto px-4">
+      <FilterComponent
+                categories={categories}
+                activeFilter={activeFilter}
+                onFilterChange={setActiveFilter}
+                className="my-6"
+                activeButtonClassName="font-medium"
+           />
+      <PostList posts={displayedItems} />
+    </main>
+  </div>
+);
+ }
 
 export default BlogPage;

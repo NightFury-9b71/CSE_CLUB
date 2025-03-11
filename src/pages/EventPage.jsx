@@ -1,109 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MapPin, Calendar, Users, Star, CheckCircle } from 'lucide-react';
+import FilterComponent from '../components/Components';
+import { useFilteredData } from '../hooks/useFilteredData';
 import { fetchEvents } from '../backend/api';
-
-// Reusable Components (Single Responsibility)
-
-const FilterControls = ({ onFilterChange, onSearchChange }) => {
-  const [activeFilter, setActiveFilter] = useState('All');
-
-  const handleFilterClick = (filter) => {
-    setActiveFilter(filter);
-    onFilterChange(filter);
-  };
-
-  return (
-    <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-      <div className="relative w-full md:w-1/2 mb-4 md:mb-0">
-        <input
-          type="text"
-          placeholder="Search events..."
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring focus:border-blue-300"
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </div>
-      <div className="flex flex-wrap gap-2 justify-center md:justify-end">
-        <FilterButton
-          active={activeFilter === 'All'}
-          onClick={() => handleFilterClick('All')}
-        >
-          All
-        </FilterButton>
-        <FilterButton
-          active={activeFilter === 'Faculty'}
-          onClick={() => handleFilterClick('Faculty')}
-        >
-          Faculty
-        </FilterButton>
-        <FilterButton
-          active={activeFilter === 'Senior Students'}
-          onClick={() => handleFilterClick('Senior Students')}
-        >
-          Senior Students
-        </FilterButton>
-        <FilterButton
-          active={activeFilter === 'Clubs'}
-          onClick={() => handleFilterClick('Clubs')}
-        >
-          Clubs
-        </FilterButton>
-        <FilterButton
-          active={activeFilter === 'Upcoming'}
-          onClick={() => handleFilterClick('Upcoming')}
-        >
-          Upcoming
-        </FilterButton>
-      </div>
-    </div>
-  );
-};
-
-const FilterButton = ({ active, onClick, children }) => (
-  <button
-    className={`px-4 py-2 rounded-full cursor-pointer transition-colors duration-300 font-medium ${
-      active
-        ? 'bg-blue-600 text-white shadow-md' // Changed to blue for a modern look
-        : 'bg-gray-100 text-gray-700 hover:bg-gray-200' // Lighter gray background
-    } focus:outline-none focus:ring focus:border-blue-300`}
-    onClick={onClick}
-  >
-    {children}
-  </button>
-);
-
-const EventGrid = ({ events }) => (
-  <div className="event-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-    {events.map((event) => (
-      <EventCard key={event.id} event={event} />
-    ))}
-  </div>
-);
-
-const ProgressBar = ({ label, value, total, type }) => (
-  <div className="event-progress mb-3">
-    <div className="progress-label flex justify-between text-xs mb-1">
-      <span>{label}</span>
-      <span>{value}/{total}</span>
-    </div>
-    <div className="progress-bar h-2 bg-gray-200 rounded-full overflow-hidden">
-      <div className={`progress-fill h-full rounded-full ${type === 'fundraising' ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${(value / total) * 100}%` }}></div>
-    </div>
-  </div>
-);
 
 function EventCard({ event }) {
   const [isInterested, setIsInterested] = useState(false);
@@ -215,77 +114,178 @@ function EventCard({ event }) {
   );
 }
 
+const EventGrid = ({ events }) => (
+  <div className="px-8 py-8 event-grid grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3  xxl:grid-cols-4 gap-5 mb-8">
+    {events.map((event) => (
+      <EventCard key={event.id} event={event} />
+    ))}
+  </div>
+);
+
+const ProgressBar = ({ label, value, total, type }) => (
+  <div className="event-progress mb-3">
+    <div className="progress-label flex justify-between text-xs mb-1">
+      <span>{label}</span>
+      <span>{value}/{total}</span>
+    </div>
+    <div className="progress-bar h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className={`progress-fill h-full rounded-full ${type === 'fundraising' ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${(value / total) * 100}%` }}></div>
+    </div>
+  </div>
+);
+
 // Main Component (Open/Closed, Liskov)
-const EventPage = () => {
-    const [events, setEvents] = useState([]);
-    const [filteredEvents, setFilteredEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [activeFilter, setActiveFilter] = useState('All');
-    const [searchTerm, setSearchTerm] = useState('');
+function EventPage() {
   
-    useEffect(() => {
-      const fetchData = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const fetchedEvents = await fetchEvents();
-          setEvents(fetchedEvents);
-          setFilteredEvents(fetchedEvents); // Initialize filtered events with all events
-        } catch (err) {
-          setError(err);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchData();
-    }, []);
-  
-    useEffect(() => {
-      applyFilters();
-    }, [activeFilter, searchTerm, events]);
-  
-    const applyFilters = () => {
-      let filtered = [...events];
-  
-      if (activeFilter !== 'All') {
-        filtered = filtered.filter((event) => event.category === activeFilter);
-      }
-  
-      if (searchTerm) {
-        filtered = filtered.filter((event) =>
-          event.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-      setFilteredEvents(filtered);
-    };
-  
-    const handleFilterChange = (filter) => {
-      setActiveFilter(filter);
-    };
-  
-    const handleSearchChange = (term) => {
-      setSearchTerm(term);
-    };
-  
-    if (loading) {
-      return <div className="text-center py-8">Loading...</div>;
-    }
-  
-    if (error) {
-      return <div className="text-center py-8 text-red-500">Error: {error.message || 'Failed to load data.'}</div>;
-    }
-  
+  const {
+    displayedItems,
+    categories,
+    loading,
+    error,
+    activeFilter,
+    setActiveFilter,
+    resetFilter
+  } = useFilteredData(fetchEvents, { 
+    defaultCategory: 'all', 
+    categoryKey: 'category' 
+  });
+
+  if (loading) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
+
+  if (error) {
     return (
-      <main className="container mx-auto px-4 pt-8">
-        <FilterControls
-          onFilterChange={handleFilterChange}
-          onSearchChange={handleSearchChange}
-        />
-        <EventGrid events={filteredEvents} />
-      </main>
+      <div className="text-center py-8 text-red-500">
+        Error: {error.message || 'Failed to load data.'}
+      </div>
     );
-  };
+  }
+
+  return (
+    <div>
+      <FilterComponent
+          categories={categories}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+          className="my-6"
+          activeButtonClassName="font-medium"
+     />
+      <EventGrid events={displayedItems} />
+    </div>
+  );
+}
+
+export default EventPage;
+
+
+// const EventPage = () => {
+//   const [filteringEnabled, setFilteringEnabled] = useState(true);
   
-  export default EventPage;
+//   // Get data independently of filtering
+//   const { 
+//     data: galleryItems, 
+//     loading, 
+//     error 
+//   } = useDataProvider(fetchEvents, []);
+  
+//   // Set up filtering independently of data fetching
+//   const {
+//     activeFilter,
+//     setActiveFilter,
+//     filterItems,
+//     extractCategories,
+//     resetFilter
+//   } = useFilter({ 
+//     defaultCategory: 'all', 
+//     categoryKey: 'category' 
+//   });
+  
+//   // Get categories from the data when available
+//   const categories = extractCategories(galleryItems);
+  
+//   // Display either filtered or all items based on filtering toggle
+//   const displayedItems = filteringEnabled 
+//     ? filterItems(galleryItems) 
+//     : galleryItems;
+
+//   return (
+//     <div className="gallery-page max-w-[1500px] mx-auto p-4 my-8">
+//       <h1 className="text-4xl font-bold mb-6 text-center">Event Gallery</h1>
+      
+//       {/* Toggle for enabling/disabling filtering */}
+//       <div className="flex justify-center mb-4">
+//         <label className="flex items-center cursor-pointer">
+//           <input 
+//             type="checkbox" 
+//             checked={filteringEnabled}
+//             onChange={() => {
+//               setFilteringEnabled(!filteringEnabled);
+//               if (!filteringEnabled) {
+//                 // Reset to default filter when re-enabling
+//                 resetFilter();
+//               }
+//             }}
+//             className="sr-only"
+//           />
+//           <div className={`w-12 h-6 rounded-full transition-colors duration-300 ${filteringEnabled ? 'bg-blue-600' : 'bg-gray-300'} mr-2`}>
+//             <div className={`w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ${filteringEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
+//           </div>
+//           <span>Enable Filtering</span>
+//         </label>
+//       </div>
+      
+//       {/* Only show filter if filtering is enabled */}
+//       {filteringEnabled && (
+//         <FilterComponent
+//           categories={categories}
+//           activeFilter={activeFilter}
+//           onFilterChange={setActiveFilter}
+//           className="my-6"
+//           activeButtonClassName="font-medium"
+//         />
+//       )}
+      
+//       {/* Display items section */}
+//       {loading ? (
+//         <div className="text-center py-12">
+//           <div className="animate-spin mx-auto h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+//           <p className="mt-4">Loading gallery items...</p>
+//         </div>
+//       ) : error ? (
+//         <div className="text-center py-12 text-red-500">
+//           <p>Error: {error}</p>
+//           <button 
+//             onClick={() => refresh()} 
+//             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+//           >
+//             Try Again
+//           </button>
+//         </div>
+//       ) : displayedItems.length === 0 ? (
+//         <div className="text-center py-12 text-gray-500">
+//           <p>No items found {filteringEnabled ? 'for this category' : ''}.</p>
+//         </div>
+//       ) : (
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+//           {displayedItems.map((item, index) => (
+//             <div key={index} className="gallery-item bg-white rounded-lg shadow-lg overflow-hidden">
+//               <img 
+//                 src={item.imageUrl} 
+//                 alt={item.title} 
+//                 className="w-full h-48 object-cover" 
+//               />
+//               <div className="p-4">
+//                 <h3 className="font-bold text-lg">{item.title}</h3>
+//                 <p className="text-gray-600 text-sm mt-1">{item.description}</p>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+
+

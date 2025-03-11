@@ -9,6 +9,7 @@ import TreasuryPage from '../pages/TreasuryPage';
 import StudyMaterialPage from '../pages/StudyMaterialPage';
 import VotingPage from '../pages/VotingPage';
 import ContactPage from '../pages/ContactPage';
+import GalleryPage from '../pages/GalleryPage';
 
 const RouteList = () => {
   return (
@@ -23,6 +24,7 @@ const RouteList = () => {
         <Route path="study-materials" element={<StudyMaterialPage />} />
         <Route path="votings" element={<VotingPage />} />
         <Route path="contacts" element={<ContactPage />} />
+        <Route path="gallery" element={<GalleryPage />} />
       </Route>
     </Routes>
   );

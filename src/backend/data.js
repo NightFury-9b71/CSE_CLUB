@@ -25,13 +25,13 @@ const mockData = {
     { number: '25', label: 'Years of Excellence' },
   ],
   galleryItems: [
-    { imageUrl: 'https://set.jainuniversity.ac.in/academics/computer-science-engineering/images/top-university-of-india3.jpg', title: 'Annual Symposium 2024', description: 'Our department\'s flagship event showcasing student research' },
-    { imageUrl: 'https://www.cst.cam.ac.uk/sites/default/files/openday1500crop.jpg', title: 'Innovation Hackathon', description: '72-hour challenge resulting in revolutionary solutions' },
-    { imageUrl: 'https://ssl.du.ac.bd/fontView/images/activity/1737866176CSEDUKUET.jpg', title: 'Excellence Awards Ceremony', description: 'Celebrating outstanding achievements in academics and research' },
-    { imageUrl: 'https://www.ritrjpm.ac.in/images/computer-science/2022-2023/workshop-rpa_1.jpg', title: 'Distinguished Speaker Series', description: 'World-class experts sharing insights with our students' },
-    { imageUrl: 'https://www.cse.ruet.ac.bd/public/storage/events/ruet-shines-at-46th-icpc-heartfelt-congratulations-to-ruet-aftermath-1.jpg', title: 'National Competition Winners', description: 'Our team bringing home the gold' },
-    { imageUrl: 'https://bauet.ac.bd/ce/wp-content/uploads/sites/7/2022/03/DSC03895-1024x768.jpg', title: 'Industry Field Trip', description: 'Students gaining real-world exposure' },
-  ],
+    { category:'normal', imageUrl: 'https://set.jainuniversity.ac.in/academics/computer-science-engineering/images/top-university-of-india3.jpg', title: 'Annual Symposium 2024', description: 'Our department\'s flagship event showcasing student research' },
+    { category:'normal', imageUrl: 'https://www.cst.cam.ac.uk/sites/default/files/openday1500crop.jpg', title: 'Innovation Hackathon', description: '72-hour challenge resulting in revolutionary solutions' },
+    { category:'normal', imageUrl: 'https://ssl.du.ac.bd/fontView/images/activity/1737866176CSEDUKUET.jpg', title: 'Excellence Awards Ceremony', description: 'Celebrating outstanding achievements in academics and research' },
+    { category:'normal', imageUrl: 'https://www.ritrjpm.ac.in/images/computer-science/2022-2023/workshop-rpa_1.jpg', title: 'Distinguished Speaker Series', description: 'World-class experts sharing insights with our students' },
+    { category:'normal', imageUrl: 'https://www.cse.ruet.ac.bd/public/storage/events/ruet-shines-at-46th-icpc-heartfelt-congratulations-to-ruet-aftermath-1.jpg', title: 'National Competition Winners', description: 'Our team bringing home the gold' },
+    { category:'normal', imageUrl: 'https://bauet.ac.bd/ce/wp-content/uploads/sites/7/2022/03/DSC03895-1024x768.jpg', title: 'Industry Field Trip', description: 'Students gaining real-world exposure' },
+  ],// category needs to be add
   alumniCards: [
     { imageUrl: 'https://static.just.edu.bd/images/public/teacher/1672469742691_-1.jpeg', name: 'Dr. Sarah Johnson', year: 'Class of 2015', description: 'Lead Researcher at InnovaTech, pioneering work in artificial intelligence' },
     { imageUrl: 'https://static.just.edu.bd/images/public/teacher/1674976532125_-1.jpeg', name: 'Michael Chen', year: 'Class of 2010', description: 'Founder & CEO of FutureSystems, Forbes 30 Under 30' },

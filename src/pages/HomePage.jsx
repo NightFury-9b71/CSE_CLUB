@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {fetchStats , fetchGalleryItems, fetchAlumniCards, fetchResearchCards, fetchTimelineItems, fetchFacultyCards} from '../backend/api';
+import { Link } from 'react-router-dom';
 
 // Reusable Components (Single Responsibility)
 const Header = () => (
@@ -50,15 +51,39 @@ const StatCard = ({ number, label }) => (
   </div>
 );
 
-const GalleryItem = ({ imageUrl, title, description }) => (
-  <div className="relative overflow-hidden rounded-lg h-[250px] shadow-[0_4px_15px_rgba(0,0,0,0.1)] transition-transform duration-300 hover:scale-[1.03]">
-    <img src={imageUrl} alt={title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.1]" />
-    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[rgba(0,0,0,0.8)] to-transparent p-4 text-white transform translate-y-full transition-transform duration-300 hover:translate-y-0">
-      <h3 className="font-semibold">{title}</h3>
-      <p className="text-sm">{description}</p>
+export const GalleryItem = ({ imageUrl, title, description }) => (
+  <div className="group relative overflow-hidden rounded-lg h-[250px] shadow-[0_4px_15px_rgba(0,0,0,0.1)] transition-transform duration-300 hover:scale-[1.03]">
+    <img
+      src={imageUrl}
+      alt={title}
+      className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.1]"
+    />
+    <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full transition-transform duration-300 group-hover:translate-y-0">
+      <div className="absolute inset-0 bg-gradient-to-t from-[#000] to-transparent"></div>
+      <div className="relative">
+        <h3 className="font-bold">{title}</h3>
+        <p className="text-bold">{description}</p>
+      </div>
     </div>
   </div>
 );
+
+export const EventGallery = ({ galleryItems }) => {
+  return (
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      {galleryItems.map((item, index) => (
+        <GalleryItem key={index} imageUrl={item.imageUrl} title={item.title} description={item.description} />
+      ))}
+      </div>
+      <div className="flex justify-center mb-12">
+        <Button destinaion={'/gallery'}>
+          View More Photos
+        </Button>
+      </div>
+    </>
+  );
+};
 
 const AlumniCard = ({ imageUrl, name, year, description }) => (
   <div className="flex-shrink-0 w-[300px] scroll-snap-align-start bg-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-lg overflow-hidden transition-transform duration-300 hover:translate-y-[-10px]">
@@ -108,13 +133,13 @@ const FacultyCard = ({ imageUrl, name, position, description }) => (
   </div>
 );
 
-const Button = ({ children }) => (
-  <a
-    href="#"
+const Button = ({ children, destinaion}) => (
+  <Link
+    to={destinaion}
     className="inline-block bg-[#3498db] text-white py-3 px-6 rounded-lg no-underline font-medium transition-all duration-300 border-none cursor-pointer hover:bg-[#2980b9] hover:translate-y-[-3px] hover:shadow-[0_4px_10px_rgba(0,0,0,0.2)]"
   >
     {children}
-  </a>
+  </Link>
 );
 
 const Footer = () => (
@@ -135,31 +160,31 @@ const HomePage = () => {
   const [facultyCards, setFacultyCards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
-
+      
       try {
         const statsData = await fetchStats();
         setStats(statsData);
-
+        
         const galleryData = await fetchGalleryItems();
         setGalleryItems(galleryData);
-
+        
         const alumniData = await fetchAlumniCards();
         setAlumniCards(alumniData);
-
+        
         const researchData = await fetchResearchCards();
         setResearchCards(researchData);
-
+        
         const timelineData = await fetchTimelineItems();
         setTimelineItems(timelineData);
-
+        
         const facultyData = await fetchFacultyCards();
         setFacultyCards(facultyData);
-
+        
       } catch (err) {
         console.error('Error fetching data:', err);
         setError(err);
@@ -167,18 +192,18 @@ const HomePage = () => {
         setIsLoading(false);
       }
     };
-
+    
     fetchData();
   }, []);
-
+  
   if (isLoading) {
     return <div className="text-center py-8">Loading...</div>;
   }
-
+  
   if (error) {
     return <div className="text-center py-8 text-red-500">Error: {error.message || 'Failed to load data.'}</div>;
   }
-
+  
   return (
     <div className="bg-[#ecf0f1] text-[#2c3e50]">
       <Header />
@@ -195,15 +220,8 @@ const HomePage = () => {
         </section>
 
         <section id="events">
-          <SectionTitle>Event Gallery</SectionTitle>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {galleryItems.map((item, index) => (
-              <GalleryItem key={index} imageUrl={item.imageUrl} title={item.title} description={item.description} />
-            ))}
-          </div>
-          <div className="flex justify-center mb-12">
-            <Button>View More Photos</Button>
-          </div>
+        <SectionTitle>Event Gallery</SectionTitle>
+        <EventGallery galleryItems={galleryItems} />
         </section>
 
         <section id="alumni">
@@ -256,5 +274,6 @@ const HomePage = () => {
     </div>
   );
 };
+
 
 export default HomePage;

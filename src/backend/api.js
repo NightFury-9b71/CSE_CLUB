@@ -50,11 +50,25 @@ const fetchFacultyCards = () => {
   });
 };
 
-const fetchEvents = () => {
+const fetchEvents = (filter, search) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(mockData.events.slice(0,4));
-    }, 10); // Simulate 500ms delay
+      let filteredEvents = mockData.events;
+
+      // Apply filter
+      if (filter && filter !== 'All') {
+        filteredEvents = filteredEvents.filter((event) => event.category === filter);
+      }
+
+      // Apply search
+      if (search) {
+        filteredEvents = filteredEvents.filter((event) =>
+          event.title.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+
+      resolve(filteredEvents);
+    }, 100); // Simulate 100ms delay
   });
 };
 
