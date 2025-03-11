@@ -35,15 +35,6 @@ const Search = ({ search, handleSearchChange }) => (
   </div>
 );
 
-const FilterControls = ({ filterOptions, activeFilter, search, onFilterChange, onSearchChange }) => {
-  return (
-    <div className="flex flex-col md:flex-row justify-between items-center mb-8 p-4 border-b border-gray-200">
-      <Filter selectedFilter={activeFilter} onFilterChange={onFilterChange} filterOptions={filterOptions} />
-      <Search search={search} handleSearchChange={onSearchChange} />
-    </div>
-  );
-};
-
 
 // import React from 'react';
 import PropTypes from 'prop-types';
@@ -105,6 +96,20 @@ FilterComponent.propTypes = {
   inactiveButtonClassName: PropTypes.string
 };
 
-export default FilterComponent;
+// LoadingIndicator Component (Single Responsibility)
+const LoadingIndicator = () => (
+  <div className="flex justify-center items-center h-64">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
 
-export { Filter, Search, FilterControls, FilterComponent };
+// ErrorDisplay Component (Single Responsibility)
+const ErrorDisplay = ({ message }) => (
+  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <strong className="font-bold">Error: </strong>
+    <span className="block sm:inline">{message}</span>
+  </div>
+);
+
+
+export { Filter, Search, FilterComponent, LoadingIndicator, ErrorDisplay };

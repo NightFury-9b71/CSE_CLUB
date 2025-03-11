@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchPosts } from '../backend/api'; // Ensure this import points to your API file
 import { FaHeart, FaComment, FaSearch } from 'react-icons/fa';
-import FilterComponent from '../components/Components';
+import {FilterComponent, LoadingIndicator, ErrorDisplay } from '../components/Components';
 import { useFilteredData } from '../hooks/useFilteredData';
 
 // Header Component
@@ -132,17 +132,8 @@ const BlogPage = () => {
     categoryKey: 'category' 
   });
 
-    if (loading) {
-      return <div className="text-center py-8">Loading...</div>;
-    }
-  
-    if (error) {
-      return (
-        <div className="text-center py-8 text-red-500">
-          Error: {error.message || 'Failed to load data.'}
-        </div>
-      );
-    }
+      if (loading) return <LoadingIndicator />;
+      if (error) return <ErrorDisplay message={error} />;
 
 return (
   <div className="bg-gray-100 min-h-screen">

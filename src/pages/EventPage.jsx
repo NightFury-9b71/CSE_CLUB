@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MapPin, Calendar, Users, Star, CheckCircle } from 'lucide-react';
-import FilterComponent from '../components/Components';
+import { FilterComponent, LoadingIndicator, ErrorDisplay } from '../components/Components';
 import { useFilteredData } from '../hooks/useFilteredData';
 import { fetchEvents } from '../backend/api';
 
@@ -150,17 +150,8 @@ function EventPage() {
     categoryKey: 'category' 
   });
 
-  if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-8 text-red-500">
-        Error: {error.message || 'Failed to load data.'}
-      </div>
-    );
-  }
+    if (loading) return <LoadingIndicator />;
+    if (error) return <ErrorDisplay message={error} />;
 
   return (
     <div>

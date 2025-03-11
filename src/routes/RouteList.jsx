@@ -10,6 +10,8 @@ import StudyMaterialPage from '../pages/StudyMaterialPage';
 import VotingPage from '../pages/VotingPage';
 import ContactPage from '../pages/ContactPage';
 import GalleryPage from '../pages/GalleryPage';
+import AlumniDetailsPage from '../pages/AlumniDetailsPage';
+import AlumniProfilePage from '../pages/AlumniProfilePage';
 
 const RouteList = () => {
   return (
@@ -25,6 +27,8 @@ const RouteList = () => {
         <Route path="votings" element={<VotingPage />} />
         <Route path="contacts" element={<ContactPage />} />
         <Route path="gallery" element={<GalleryPage />} />
+        <Route path="alumni" element={<AlumniDetailsPage />} />
+        <Route path="profile" element={<AlumniProfilePage />} />
       </Route>
     </Routes>
   );
