@@ -13,6 +13,11 @@ import GalleryPage from '../pages/GalleryPage';
 import AlumniDetailsPage from '../pages/AlumniDetailsPage';
 import AlumniProfilePage from '../pages/AlumniProfilePage';
 import CSClubAuth from '../pages/AuthenticationPage';
+import StudentDashboard from '../pages/DashBoard';
+import AccountSettingsPage from '../pages/AccountSettingsPage';
+import ClubMembersRoleDashboard from '../pages/ClubMembersRoleDashboard';
+import AdminDashboard from '../pages/AdminDashboard';
+import CSDashboard from '../pages/CSDashboard';
 
 const RouteList = () => {
   return (
@@ -31,6 +36,11 @@ const RouteList = () => {
         <Route path="alumni" element={<AlumniDetailsPage />} />
         <Route path="profile" element={<AlumniProfilePage />} />
         <Route path="sign-in" element={<CSClubAuth />} />
+        <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="settings" element={<AccountSettingsPage />} />
+        <Route path="commite" element={<ClubMembersRoleDashboard />} />
+        <Route path="admin" element={<AdminDashboard />} />
+        <Route path="student" element={<CSDashboard />} />
       </Route>
     </Routes>
   );

@@ -1,260 +1,401 @@
-// File: AlumniProfilePage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { User, Mail, Phone, Book, Calendar, MapPin, Save, ArrowLeft } from 'lucide-react';
 
-// Interface for profile data
-// Single Responsibility: Data structure definition
-const DEFAULT_PROFILE = {
-  id: '',
-  name: '',
-  graduationYear: '',
-  jobTitle: '',
-  company: '',
-  email: '',
-  linkedin: '',
-  github: '',
-  bio: '',
-  achievements: [],
-  projects: [],
-  skills: []
-};
-
-// ProfileService - Responsible for data fetching (Single Responsibility)
-// This can be easily swapped with different implementations (Open/Closed)
-const ProfileService = {
-  async getProfile(id) {
-    try {
-      // In a real app, this would be an actual API call
-      // Mocking API response for demonstration
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            id: '123',
-            name: 'Jane Doe',
-            graduationYear: '2020',
-            jobTitle: 'Senior Software Engineer',
-            company: 'Tech Innovations Inc.',
-            email: 'jane.doe@example.com',
-            linkedin: 'linkedin.com/in/janedoe',
-            github: 'github.com/janedoe',
-            bio: 'CS graduate who specialized in machine learning and distributed systems. Started the Algorithms Club during sophomore year.',
-            achievements: [
-              'Published paper on neural networks in IEEE Conference 2021',
-              'First Place in University Hackathon 2019',
-              'Dean\'s List 2017-2020'
-            ],
-            projects: [
-              {
-                name: 'Distributed Learning System',
-                description: 'Built a scalable system for distributed machine learning',
-                technologies: ['Python', 'TensorFlow', 'Kubernetes']
-              },
-              {
-                name: 'CS Department Portal',
-                description: 'Led development of department\'s student portal',
-                technologies: ['React', 'Node.js', 'MongoDB']
-              }
-            ],
-            skills: ['JavaScript', 'React', 'Python', 'Machine Learning', 'AWS', 'System Design']
-          });
-        }, 500);
-      });
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      throw error;
+const EditProfileComponent = () => {
+  // Sample initial user data - would come from your API/context in a real implementation
+  const [userData, setUserData] = useState({
+    name: "Alex Johnson",
+    email: "alex.johnson@university.edu",
+    phone: "+1 (555) 123-4567",
+    department: "Computer Science",
+    year: "3rd Year",
+    semester: "Spring 2025",
+    bio: "Computer Science student with interests in web development, machine learning, and open source projects. Active member of the CS Club since 2023.",
+    address: "123 University Ave, Campus Housing B12",
+    enrollmentId: "CS2022134",
+    skills: ["JavaScript", "React", "Python", "Java", "Git"],
+    avatar: "/api/placeholder/150/150",
+    socialLinks: {
+      github: "github.com/alexj",
+      linkedin: "linkedin.com/in/alexjohnson",
+      twitter: ""
     }
-  }
-};
-
-// ProfileHeader Component (Single Responsibility)
-const ProfileHeader = ({ profile }) => (
-  <div className="bg-blue-700 text-white p-6 rounded-t-lg">
-    <h1 className="text-3xl font-bold">{profile.name}</h1>
-    <p className="text-xl">Class of {profile.graduationYear}</p>
-    <div className="mt-2">
-      <p>{profile.jobTitle} at {profile.company}</p>
-    </div>
-  </div>
-);
-
-// ContactInfo Component (Single Responsibility)
-const ContactInfo = ({ profile }) => (
-  <div className="bg-white p-4 shadow-md rounded-lg mb-6">
-    <h2 className="text-xl font-semibold mb-3">Contact Information</h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <p className="font-medium">Email:</p>
-        <a href={`mailto:${profile.email}`} className="text-blue-600 hover:underline">
-          {profile.email}
-        </a>
-      </div>
-      <div>
-        <p className="font-medium">LinkedIn:</p>
-        <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-          {profile.linkedin}
-        </a>
-      </div>
-      <div>
-        <p className="font-medium">GitHub:</p>
-        <a href={profile.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-          {profile.github}
-        </a>
-      </div>
-    </div>
-  </div>
-);
-
-// Bio Component (Single Responsibility)
-const Bio = ({ bio }) => (
-  <div className="bg-white p-4 shadow-md rounded-lg mb-6">
-    <h2 className="text-xl font-semibold mb-3">Biography</h2>
-    <p className="text-gray-700">{bio}</p>
-  </div>
-);
-
-// ListSection Component - Generic list display (Open/Closed principle)
-const ListSection = ({ title, items, renderItem }) => (
-  <div className="bg-white p-4 shadow-md rounded-lg mb-6">
-    <h2 className="text-xl font-semibold mb-3">{title}</h2>
-    <ul className="list-disc pl-5">
-      {items.map((item, index) => (
-        <li key={index} className="mb-2">
-          {renderItem(item)}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
-// Project Component (Single Responsibility)
-const ProjectItem = ({ project }) => (
-  <div>
-    <h3 className="font-medium">{project.name}</h3>
-    <p className="text-gray-700">{project.description}</p>
-    <div className="mt-1 flex flex-wrap gap-1">
-      {project.technologies.map((tech, index) => (
-        <span key={index} className="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm">
-          {tech}
-        </span>
-      ))}
-    </div>
-  </div>
-);
-
-// SkillBadge Component (Single Responsibility)
-const SkillBadge = ({ skill }) => (
-  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2 mb-2 inline-block">
-    {skill}
-  </span>
-);
-
-// Skills Section Component (Single Responsibility)
-const SkillsSection = ({ skills }) => (
-  <div className="bg-white p-4 shadow-md rounded-lg mb-6">
-    <h2 className="text-xl font-semibold mb-3">Skills</h2>
-    <div className="flex flex-wrap">
-      {skills.map((skill, index) => (
-        <SkillBadge key={index} skill={skill} />
-      ))}
-    </div>
-  </div>
-);
-
-// LoadingIndicator Component (Single Responsibility)
-const LoadingIndicator = () => (
-  <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-  </div>
-);
-
-// Error Component (Single Responsibility)
-const ErrorDisplay = ({ message }) => (
-  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-    <strong className="font-bold">Error: </strong>
-    <span className="block sm:inline">{message}</span>
-  </div>
-);
-
-// Main AlumniProfile Component
-// Uses composition to combine all the components
-const AlumniProfile = ({ profileId }) => {
-  const [profile, setProfile] = useState(DEFAULT_PROFILE);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const data = await ProfileService.getProfile(profileId);
-        setProfile(data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load profile data. Please try again later.');
-      } finally {
-        setLoading(false);
+  });
+  
+  // Form state
+  const [formData, setFormData] = useState(userData);
+  const [newSkill, setNewSkill] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+  
+  // Handle social link changes
+  const handleSocialLinkChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      socialLinks: {
+        ...formData.socialLinks,
+        [name]: value
       }
-    };
-
-    fetchProfile();
-  }, [profileId]);
-
-  if (loading) return <LoadingIndicator />;
-  if (error) return <ErrorDisplay message={error} />;
-
-  return (
-    <div className="max-w-4xl mx-auto my-8">
-      <ProfileHeader profile={profile} />
+    });
+  };
+  
+  // Add new skill
+  const handleAddSkill = () => {
+    if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
+      setFormData({
+        ...formData,
+        skills: [...formData.skills, newSkill.trim()]
+      });
+      setNewSkill("");
+    }
+  };
+  
+  // Remove skill
+  const handleRemoveSkill = (skillToRemove) => {
+    setFormData({
+      ...formData,
+      skills: formData.skills.filter(skill => skill !== skillToRemove)
+    });
+  };
+  
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setUserData(formData);
+      setIsSubmitting(false);
+      setSuccessMessage("Profile updated successfully!");
       
-      <div className="bg-gray-50 p-6 rounded-b-lg">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Bio bio={profile.bio} />
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+    }, 1000);
+  };
+  
+  return (
+    <div className="bg-gray-100 p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-6 flex items-center">
+          <a href="/dashboard" className="flex items-center text-blue-600 hover:underline mr-4">
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            <span>Back to Dashboard</span>
+          </a>
+          <h1 className="text-2xl font-bold text-gray-800">Edit Profile</h1>
+        </div>
+        
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-200 text-green-700 rounded-md">
+            {successMessage}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit}>
+          <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
+            {/* Profile Picture Section */}
+            <div className="p-6 border-b bg-blue-50">
+              <div className="flex flex-col md:flex-row items-center">
+                <div className="mb-4 md:mb-0 md:mr-6">
+                  <img
+                    src={formData.avatar}
+                    alt="Profile"
+                    className="w-32 h-32 rounded-full border-4 border-white shadow-md"
+                  />
+                </div>
+                <div className="flex-grow text-center md:text-left">
+                  <h2 className="text-xl font-semibold">{formData.name}</h2>
+                  <p className="text-gray-600">{formData.department} • {formData.year}</p>
+                  <p className="text-sm text-gray-500 mt-1">Enrollment ID: {formData.enrollmentId}</p>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      Change Photo
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
             
-            <ListSection 
-              title="Projects"
-              items={profile.projects}
-              renderItem={(project) => <ProjectItem project={project} />}
-            />
+            {/* Personal Information */}
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-medium mb-4">Personal Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Mail className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Phone className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MapPin className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
             
-            <ListSection 
-              title="Achievements"
-              items={profile.achievements}
-              renderItem={(achievement) => <span>{achievement}</span>}
-            />
+            {/* Academic Information */}
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-medium mb-4">Academic Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Book className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <select
+                      name="department"
+                      value={formData.department}
+                      onChange={handleChange}
+                      className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    >
+                      <option>Computer Science</option>
+                      <option>Information Technology</option>
+                      <option>Computer Engineering</option>
+                      <option>Data Science</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Calendar className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <select
+                      name="year"
+                      value={formData.year}
+                      onChange={handleChange}
+                      className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    >
+                      <option>1st Year</option>
+                      <option>2nd Year</option>
+                      <option>3rd Year</option>
+                      <option>4th Year</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Calendar className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <select
+                      name="semester"
+                      value={formData.semester}
+                      onChange={handleChange}
+                      className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    >
+                      <option>Fall 2024</option>
+                      <option>Spring 2025</option>
+                      <option>Summer 2025</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Bio Section */}
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-medium mb-4">Bio</h3>
+              <textarea
+                name="bio"
+                value={formData.bio}
+                onChange={handleChange}
+                rows="4"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                placeholder="Tell us about yourself..."
+              ></textarea>
+            </div>
+            
+            {/* Skills Section */}
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-medium mb-4">Skills</h3>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {formData.skills.map((skill, index) => (
+                  <span 
+                    key={index} 
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                  >
+                    {skill}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveSkill(skill)}
+                      className="ml-1.5 inline-flex text-blue-400 hover:text-blue-600 focus:outline-none"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex">
+                <input
+                  type="text"
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  className="flex-grow rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                  placeholder="Add a skill..."
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
+                />
+                <button
+                  type="button"
+                  onClick={handleAddSkill}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-r-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            
+            {/* Social Links */}
+            <div className="p-6">
+              <h3 className="text-lg font-medium mb-4">Social Links</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">GitHub</label>
+                  <input
+                    type="text"
+                    name="github"
+                    value={formData.socialLinks.github}
+                    onChange={handleSocialLinkChange}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    placeholder="github.com/username"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                  <input
+                    type="text"
+                    name="linkedin"
+                    value={formData.socialLinks.linkedin}
+                    onChange={handleSocialLinkChange}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    placeholder="linkedin.com/in/username"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Twitter</label>
+                  <input
+                    type="text"
+                    name="twitter"
+                    value={formData.socialLinks.twitter}
+                    onChange={handleSocialLinkChange}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
+                    placeholder="twitter.com/username"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           
-          <div>
-            <ContactInfo profile={profile} />
-            <SkillsSection skills={profile.skills} />
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-4">
+            <a 
+              href="/dashboard" 
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Cancel
+            </a>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 -ml-1 h-4 w-4" />
+                  Save Changes
+                </>
+              )}
+            </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
 };
 
-// Usage example
-const AlumniProfilePage = () => {
-  return (
-    <div className="bg-gray-100 min-h-screen">
-      <header className="bg-blue-900 text-white p-4">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold">Computer Science Department</h1>
-          <p>Alumni Profiles</p>
-        </div>
-      </header>
-      
-      <main className="max-w-6xl mx-auto p-4">
-        <AlumniProfile profileId="123" />
-      </main>
-      
-      <footer className="bg-gray-800 text-white p-4 mt-8">
-        <div className="max-w-6xl mx-auto text-center">
-          <p>© {new Date().getFullYear()} Computer Science Department</p>
-        </div>
-      </footer>
-    </div>
-  );
-};
-
-export default AlumniProfilePage;
+export default EditProfileComponent;

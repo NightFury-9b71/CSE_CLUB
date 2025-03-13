@@ -14,7 +14,7 @@ const fetchGalleryItems = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockData.galleryItems);
-    }, 10); // Simulate 750ms delay
+    }, 10); 
   });
 };
 

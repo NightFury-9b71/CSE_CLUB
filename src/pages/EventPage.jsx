@@ -333,7 +333,7 @@ function EventPage() {
     refresh
   } = useFilteredData(fetchEvents, { 
     defaultCategory: 'all', 
-    categoryKey: 'category' 
+    categoryKey: 'category'
   });
   
   // Filter events by search term
